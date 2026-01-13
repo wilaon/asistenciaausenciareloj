@@ -26,9 +26,6 @@ const App = {
             CameraService.init();
             UIService.init();
 
-            // Verificar conexión
-            await this.checkConnection();
-
             // Configurar event listeners
             this.setupEventListeners();
 
@@ -40,18 +37,6 @@ const App = {
         } catch (error) {
             console.error('❌ Error al iniciar:', error);
             UIService.showModalError(CONFIG.MESSAGES.ERROR.GENERIC);
-        }
-    },
-
-    /**
-     * Verifica la conexión con el servidor
-     */
-    async checkConnection() {
-        const isOnline = await ApiService.checkConnection();
-        UIService.updateConnectionStatus(isOnline);
-        
-        if (!isOnline) {
-            UIService.showToast('No hay conexión con el servidor. Algunas funciones pueden no estar disponibles.', 'warning');
         }
     },
 
@@ -188,10 +173,6 @@ const App = {
             }
         });
 
-        // Verificar conexión periódicamente
-        setInterval(() => {
-            this.checkConnection();
-        }, 30000); // Cada 30 segundos
     },
 
     /**
@@ -703,7 +684,6 @@ const App = {
      */
     async refresh() {
         UIService.showToast('Actualizando...', 'info');
-        await this.checkConnection();
         await this.loadInitialData();
         UIService.showToast('Datos actualizados', 'success');
     },

@@ -17,7 +17,6 @@ const PRECACHE_URLS = [
     '/js/ui.js',
     '/js/app.js',
     '/js/pwa.js',
-    '/manifest.json'
 ];
 
 // Instalación del Service Worker
@@ -43,7 +42,7 @@ self.addEventListener('activate', (event) => {
             .then((cacheNames) => {
                 return Promise.all(
                     cacheNames.map((cacheName) => {
-                        if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
+                        if (cacheName !== CACHE_NAME) {
                             console.log('[SW] Eliminando cache antigua:', cacheName);
                             return caches.delete(cacheName);
                         }
@@ -54,96 +53,45 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Intercepción de peticiones
+// Intercepción de peticiones (estrategia simple: Network First)
 self.addEventListener('fetch', (event) => {
     const { request } = event;
-    const url = new URL(request.url);
 
     // Ignorar peticiones que no sean GET
     if (request.method !== 'GET') {
         return;
     }
 
-    // Ignorar peticiones a la API (siempre ir a la red)
-    if (url.origin.includes('workers.dev') || url.origin.includes('script.google.com')) {
-        event.respondWith(
-            fetch(request)
-                .catch(() => {
-                    // Si falla, mostrar página offline personalizada
-                    return new Response(
-                        JSON.stringify({
-                            success: false,
-                            message: 'Sin conexión a internet'
-                        }),
-                        {
-                            headers: { 'Content-Type': 'application/json' }
-                        }
-                    );
-                })
-        );
+    // Ignorar peticiones a APIs externas (siempre ir a la red)
+    const url = new URL(request.url);
+    if (url.origin.includes('workers.dev') || 
+        url.origin.includes('script.google.com') ||
+        url.origin.includes('drive.google.com')) {
         return;
     }
 
-    // Estrategia: Cache First, luego Network
+    // Estrategia: Network First, luego Cache
     event.respondWith(
-        caches.match(request)
-            .then((cachedResponse) => {
-                if (cachedResponse) {
-                    // Encontrado en cache, pero actualizar en background
-                    event.waitUntil(updateCache(request));
-                    return cachedResponse;
+        fetch(request)
+            .then((response) => {
+                // Si la respuesta es válida, guardar en cache
+                if (response && response.status === 200) {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME)
+                        .then((cache) => {
+                            cache.put(request, responseClone);
+                        });
                 }
-
-                // No está en cache, ir a la red
-                return fetch(request)
-                    .then((response) => {
-                        // Si es válido, guardar en cache runtime
-                        if (response && response.status === 200) {
-                            const responseClone = response.clone();
-                            caches.open(RUNTIME_CACHE)
-                                .then((cache) => {
-                                    cache.put(request, responseClone);
-                                });
-                        }
-                        return response;
-                    })
-                    .catch(() => {
-                        // Si todo falla, mostrar página offline
-                        return caches.match('/index.html');
+                return response;
+            })
+            .catch(() => {
+                // Si falla la red, intentar cache
+                return caches.match(request)
+                    .then((cachedResponse) => {
+                        return cachedResponse || caches.match('/index.html');
                     });
             })
     );
 });
 
-// Actualiza el cache en background
-async function updateCache(request) {
-    const cache = await caches.open(CACHE_NAME);
-    
-    try {
-        const response = await fetch(request);
-        if (response && response.status === 200) {
-            await cache.put(request, response);
-        }
-    } catch (error) {
-        console.log('[SW] Error actualizando cache:', error);
-    }
-}
-
-// Manejo de mensajes desde el cliente
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-
-    if (event.data && event.data.type === 'CLEAR_CACHE') {
-        event.waitUntil(
-            caches.keys().then((cacheNames) => {
-                return Promise.all(
-                    cacheNames.map((cacheName) => caches.delete(cacheName))
-                );
-            })
-        );
-    }
-});
-
-console.log('[SW] Service Worker cargado correctamente');
+console.log('[SW] Service Worker cargado (modo básico)');
