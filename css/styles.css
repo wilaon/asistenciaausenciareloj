@@ -985,6 +985,17 @@ html, body {
     padding: 0;
 }
 
+/* Icono de advertencia en modal */
+.modal-icon.warning {
+    background: linear-gradient(135deg, var(--color-warning) 0%, #d97706 100%);
+}
+
+.modal-icon.warning svg {
+    width: 40px;
+    height: 40px;
+    color: white;
+}
+
 /* ============================================
    RESPONSIVE
    ============================================ */

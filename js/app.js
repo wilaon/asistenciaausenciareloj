@@ -648,7 +648,13 @@ const App = {
             }
 
             // Procesar respuesta
-            if (response.success) {
+            if (response.success && response.data) {
+            const todosExitosos = response.data.every(r => r.success === true);
+            const algunoExitoso = response.data.some(r => r.success === true);
+            const todosFallaron = response.data.every(r => r.success === false);
+
+            if (todosExitosos) {
+                // ✅ TODOS EXITOSOS
                 const mensaje = this.state.tipoRegistro === 'entrada'
                     ? CONFIG.MESSAGES.SUCCESS.REGISTRO_ENTRADA
                     : CONFIG.MESSAGES.SUCCESS.REGISTRO_SALIDA;
@@ -659,12 +665,29 @@ const App = {
                     response.data
                 );
 
-                // Reproducir sonido de éxito (opcional)
-                this.playSuccessSound();
+            } else if (todosFallaron) {
+                // ❌ TODOS FALLARON
+                const errores = response.data.map(r => r.message).join('\n');
+                UIService.showModalError(
+                    `No se pudo registrar ningún colaborador:\n\n${errores}`
+                );
 
             } else {
-                UIService.showModalError(response.message || CONFIG.MESSAGES.ERROR.GENERIC);
+                // ⚠️ PARCIALMENTE EXITOSO (algunos sí, algunos no)
+                const exitosos = response.data.filter(r => r.success).length;
+                const fallidos = response.data.filter(r => !r.success).length;
+
+                UIService.showModalConfirmacion(
+                    '⚠️ Registro Parcial',
+                    `${exitosos} colaborador(es) registrado(s) exitosamente.\n${fallidos} colaborador(es) no pudieron registrarse.`,
+                    response.data
+                );
             }
+
+        } else {
+            // Error general
+            UIService.showModalError(response.message || CONFIG.MESSAGES.ERROR.GENERIC);
+        }
 
         } catch (error) {
             console.error('Error en registro:', error);
@@ -672,19 +695,6 @@ const App = {
 
         } finally {
             UIService.setSubmitLoading(false);
-        }
-    },
-
-    /**
-     * Reproduce un sonido de éxito (opcional)
-     */
-    playSuccessSound() {
-        try {
-            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjaP1fPHdycFI3S98t2UPwoUWrHm653AFAU=');
-            audio.volume = 0.3;
-            audio.play().catch(e => console.log('Audio play failed:', e));
-        } catch (error) {
-            // Silenciar errores de audio
         }
     },
 
