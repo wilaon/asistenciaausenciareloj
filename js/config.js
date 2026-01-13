@@ -24,8 +24,8 @@ const CONFIG = {
 
     // Form Validation
     VALIDATION: {
-        DNI_LENGTH: 8,
-        DNI_PATTERN: /^\d{8}$/,
+        DNI_LENGTH: 15,
+        DNI_PATTERN: /^\d{4}-\d{4}-\d{5}$/,
         MAX_COLABORADORES_OPERATIVO: 50,
         MIN_COLABORADORES_OPERATIVO: 1,
         MAX_OBSERVACIONES_LENGTH: 500

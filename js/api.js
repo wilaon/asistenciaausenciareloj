@@ -155,40 +155,6 @@ const ApiService = {
     },
 
     /**
-     * Obtiene la geolocalización del usuario
-     */
-    async getGeolocation() {
-        if (!CONFIG.GEOLOCATION.ENABLED) {
-            return { latitud: null, longitud: null };
-        }
-
-        return new Promise((resolve) => {
-            if (!navigator.geolocation) {
-                resolve({ latitud: null, longitud: null });
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    resolve({
-                        latitud: position.coords.latitude,
-                        longitud: position.coords.longitude
-                    });
-                },
-                (error) => {
-                    console.warn('Geolocation error:', error);
-                    resolve({ latitud: null, longitud: null });
-                },
-                {
-                    timeout: CONFIG.GEOLOCATION.TIMEOUT,
-                    maximumAge: CONFIG.GEOLOCATION.MAX_AGE,
-                    enableHighAccuracy: CONFIG.GEOLOCATION.HIGH_ACCURACY
-                }
-            );
-        });
-    },
-
-    /**
      * Verifica la conectividad con el servidor
      */
     async checkConnection() {
