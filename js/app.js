@@ -615,8 +615,6 @@ const App = {
             UIService.setSubmitLoading(true);
             UIService.showToast(CONFIG.MESSAGES.INFO.PROCESSING, 'info');
 
-            // Obtener geolocalización si está habilitada
-            const { latitud, longitud } = await ApiService.getGeolocation();
 
             // Preparar datos
             const observaciones = document.getElementById('textareaObservaciones').value.trim();

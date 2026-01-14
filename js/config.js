@@ -76,15 +76,8 @@ const CONFIG = {
             PROCESSING: 'Procesando registro...',
             INICIANDO_CAMARA: 'Iniciando cámara...'
         }
-    },
-
-    // Geolocation Configuration
-    GEOLOCATION: {
-        ENABLED: false, // Cambiar a true si se requiere geolocalización
-        TIMEOUT: 5000,
-        MAX_AGE: 60000,
-        HIGH_ACCURACY: true
     }
+
 };
 
 // Freeze configuration to prevent modifications
@@ -95,7 +88,7 @@ Object.freeze(CONFIG.VALIDATION);
 Object.freeze(CONFIG.UI);
 Object.freeze(CONFIG.STORAGE);
 Object.freeze(CONFIG.MESSAGES);
-Object.freeze(CONFIG.GEOLOCATION);
+
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
