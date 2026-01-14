@@ -45,6 +45,7 @@ const App = {
      */
     async loadInitialData() {
         try {
+            UIService.blockUI();
             UIService.showToast(CONFIG.MESSAGES.INFO.LOADING_SEDES, 'info');
             const response = await ApiService.getSedes();
             
@@ -52,6 +53,7 @@ const App = {
                 this.sedes = response.data;
                 console.log('✅ Sedes cargadas:', this.sedes.length);
             }
+            UIService.unblockUI();
         } catch (error) {
             console.error('Error cargando sedes:', error);
         }
@@ -311,12 +313,10 @@ const App = {
      * Busca un colaborador por DNI
      */
     async buscarColaborador() {
-        const dniInput = document.getElementById('inputDNI');
+    const dniInput = document.getElementById('inputDNI');
     let dni = dniInput.value.trim();
 
-    // ============================================
-    // NUEVO: Formatear DNI antes de validar
-    // ============================================
+    UIService.blockUI()
     dni = this.formatearDNI(dni);
     
     if (!dni) {
@@ -334,7 +334,7 @@ const App = {
     }
 
     try {
-        //UIService.showToast(CONFIG.MESSAGES.INFO.LOADING_COLABORADOR, 'info');
+        UIService.showToast(CONFIG.MESSAGES.INFO.LOADING_COLABORADOR, 'info');
         const response = await ApiService.getColaborador(dni);
         
         if (response.success) {
@@ -472,7 +472,7 @@ const App = {
         if (!this.state.sede || !this.state.cuadrilla) {
             return;
         }
-
+        UIService.blockUI();
         try {
             UIService.showToast('Cargando colaboradores con entrada pendiente...', 'info');
             
@@ -608,7 +608,7 @@ const App = {
         if (!this.validateForm()) {
             return;
         }
-
+        UIService.blockUI();
         try {
             UIService.setSubmitLoading(true);
             UIService.showToast(CONFIG.MESSAGES.INFO.PROCESSING, 'info');

@@ -89,7 +89,17 @@ const UIService = {
      * Muestra un toast notification
      */
     showToast(message, type = 'info') {
+        // Bloquear UI
+        this.blockUI();
+        
         const container = document.getElementById('toastContainer');
+        
+        // Verificar que el container existe
+        if (!container) {
+            console.error('toastContainer no encontrado en el DOM');
+            return;
+        }
+        
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
 
@@ -115,19 +125,26 @@ const UIService = {
         // Auto-remove after duration
         const timeout = setTimeout(() => {
             this.removeToast(toast);
+            this.unblockUI();
         }, CONFIG.UI.TOAST_DURATION);
 
         // Close button handler
-        toast.querySelector('.toast-close').addEventListener('click', () => {
-            clearTimeout(timeout);
-            this.removeToast(toast);
-        });
+        const closeBtn = toast.querySelector('.toast-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                clearTimeout(timeout);
+                this.removeToast(toast);
+                this.unblockUI();
+            });
+        }
     },
 
     /**
      * Remueve un toast
      */
     removeToast(toast) {
+    if (!toast || !toast.parentNode) return;
+    
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => {
             if (toast.parentNode) {
@@ -313,7 +330,28 @@ const UIService = {
         if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-    }
+    },
+
+    /**
+     * Bloquea la interacción del usuario
+     */
+    blockUI() {
+        const blocker = document.getElementById('screenBlocker');
+        if (blocker){
+            blocker.style.display = 'block';
+        } 
+    },
+
+    /**
+     * Desbloquea la interacción del usuario
+     */
+    unblockUI() {
+        const blocker = document.getElementById('screenBlocker');
+        if (blocker){
+            blocker.style.display = 'none';
+        } 
+    },
+
 };
 
 // Export
