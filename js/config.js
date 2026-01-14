@@ -33,7 +33,7 @@ const CONFIG = {
 
     // UI Configuration
     UI: {
-        TOAST_DURATION: 4000, // 4 segundos
+        TOAST_DURATION: 3000, // 4 segundos
         MODAL_ANIMATION_DURATION: 300, // 0.3 segundos
         DEBOUNCE_DELAY: 500, // 0.5 segundos
         DATE_TIME_UPDATE_INTERVAL: 1000 // 1 segundo

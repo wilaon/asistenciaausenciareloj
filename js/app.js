@@ -334,8 +334,7 @@ const App = {
     }
 
     try {
-        UIService.showToast(CONFIG.MESSAGES.INFO.LOADING_COLABORADOR, 'info');
-        
+        //UIService.showToast(CONFIG.MESSAGES.INFO.LOADING_COLABORADOR, 'info');
         const response = await ApiService.getColaborador(dni);
         
         if (response.success) {
@@ -356,7 +355,7 @@ const App = {
             // Guardar colaborador temporal
             this.colaboradorTemporal = colaborador;
 
-            UIService.showToast(`Colaborador encontrado: ${colaborador.nombreCompleto}`, 'success');
+            //UIService.showToast(`Colaborador encontrado: ${colaborador.nombreCompleto}`, 'success');
 
         } else {
             UIService.showToast(response.message || CONFIG.MESSAGES.ERROR.COLABORADOR_NOT_FOUND, 'error');
@@ -463,7 +462,7 @@ const App = {
     removerColaborador(index) {
         this.state.colaboradoresAgregados.splice(index, 1);
         this.renderColaboradoresList();
-        UIService.showToast('Colaborador removido de la lista', 'info');
+        //UIService.showToast('Colaborador removido de la lista', 'info');
     },
 
     /**
@@ -512,7 +511,7 @@ const App = {
      */
     async iniciarCamara() {
         try {
-            UIService.showToast(CONFIG.MESSAGES.INFO.INICIANDO_CAMARA, 'info');
+            //UIService.showToast(CONFIG.MESSAGES.INFO.INICIANDO_CAMARA, 'info');
             
             await CameraService.start();
             
@@ -536,11 +535,10 @@ const App = {
             CameraService.showCapturedImage(photoData);
             
             this.state.fotoCapturada = photoData;
-            
             document.getElementById('btnCapturar').style.display = 'none';
             document.getElementById('btnRetomar').style.display = 'flex';
             
-            UIService.showToast(CONFIG.MESSAGES.SUCCESS.FOTO_CAPTURADA, 'success');
+            //UIService.showToast(CONFIG.MESSAGES.SUCCESS.FOTO_CAPTURADA, 'success');
 
         } catch (error) {
             console.error('Error capturando foto:', error);
@@ -625,9 +623,8 @@ const App = {
                 area: this.state.area,
                 cuadrilla: this.state.cuadrilla,
                 fotoBase64: this.state.fotoCapturada,
-                observaciones,
-                latitud,
-                longitud
+                observaciones
+                
             };
 
             // Enviar según tipo de registro
@@ -693,9 +690,9 @@ const App = {
      * Refresca la página
      */
     async refresh() {
-        UIService.showToast('Actualizando...', 'info');
+        //UIService.showToast('Actualizando...', 'info');
         await this.loadInitialData();
-        UIService.showToast('Datos actualizados', 'success');
+        //UIService.showToast('Datos actualizados', 'success');
     },
 
     /**
