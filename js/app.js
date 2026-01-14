@@ -120,9 +120,9 @@ const App = {
             }
         });
 
-        // Solo permitir números en DNI
+        // permitir números y guiones en DNI
         document.getElementById('inputDNI').addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = e.target.value.replace(/[^0-9\-]/g, '');
         });
 
         // Agregar colaborador
@@ -312,49 +312,61 @@ const App = {
      */
     async buscarColaborador() {
         const dniInput = document.getElementById('inputDNI');
-        const dni = dniInput.value.trim();
+    let dni = dniInput.value.trim();
 
-        // Validar DNI
-        if (!CONFIG.VALIDATION.DNI_PATTERN.test(dni)) {
-            UIService.showToast(CONFIG.MESSAGES.ERROR.INVALID_DNI, 'error');
-            dniInput.focus();
-            return;
-        }
+    // ============================================
+    // NUEVO: Formatear DNI antes de validar
+    // ============================================
+    dni = this.formatearDNI(dni);
+    
+    if (!dni) {
+        UIService.showToast('DNI inválido. Debe tener 13 dígitos (formato: 0801-2001-21228)', 'error');
+        dniInput.focus();
+        return;
+    }
+    // ============================================
 
-        try {
-            UIService.showToast(CONFIG.MESSAGES.INFO.LOADING_COLABORADOR, 'info');
+    // Validar DNI con el patrón configurado
+    if (!CONFIG.VALIDATION.DNI_PATTERN.test(dni)) {
+        UIService.showToast(CONFIG.MESSAGES.ERROR.INVALID_DNI, 'error');
+        dniInput.focus();
+        return;
+    }
+
+    try {
+        UIService.showToast(CONFIG.MESSAGES.INFO.LOADING_COLABORADOR, 'info');
+        
+        const response = await ApiService.getColaborador(dni);
+        
+        if (response.success) {
+            const colaborador = response.data;
             
-            const response = await ApiService.getColaborador(dni);
+            // Verificar si ya fue agregado
+            const yaAgregado = this.state.colaboradoresAgregados.some(c => c.dni === dni);
             
-            if (response.success) {
-                const colaborador = response.data;
-                
-                // Verificar si ya fue agregado
-                const yaAgregado = this.state.colaboradoresAgregados.some(c => c.dni === dni);
-                
-                if (yaAgregado) {
-                    UIService.showToast(CONFIG.MESSAGES.ERROR.COLABORADOR_DUPLICADO, 'warning');
-                    return;
-                }
-
-                // Mostrar datos del colaborador
-                document.getElementById('inputNombreColaborador').value = colaborador.nombreCompleto;
-                document.getElementById('groupNombreColaborador').style.display = 'block';
-
-                // Guardar colaborador temporal
-                this.colaboradorTemporal = colaborador;
-
-                UIService.showToast(`Colaborador encontrado: ${colaborador.nombreCompleto}`, 'success');
-
-            } else {
-                UIService.showToast(response.message || CONFIG.MESSAGES.ERROR.COLABORADOR_NOT_FOUND, 'error');
-                document.getElementById('groupNombreColaborador').style.display = 'none';
+            if (yaAgregado) {
+                UIService.showToast(CONFIG.MESSAGES.ERROR.COLABORADOR_DUPLICADO, 'warning');
+                return;
             }
 
-        } catch (error) {
-            console.error('Error buscando colaborador:', error);
-            UIService.showToast(CONFIG.MESSAGES.ERROR.NETWORK, 'error');
+            // Mostrar datos del colaborador
+            document.getElementById('inputNombreColaborador').value = colaborador.nombreCompleto;
+            document.getElementById('groupNombreColaborador').style.display = 'block';
+
+            // Guardar colaborador temporal
+            this.colaboradorTemporal = colaborador;
+
+            UIService.showToast(`Colaborador encontrado: ${colaborador.nombreCompleto}`, 'success');
+
+        } else {
+            UIService.showToast(response.message || CONFIG.MESSAGES.ERROR.COLABORADOR_NOT_FOUND, 'error');
+            document.getElementById('groupNombreColaborador').style.display = 'none';
         }
+
+    } catch (error) {
+        console.error('Error buscando colaborador:', error);
+        UIService.showToast(CONFIG.MESSAGES.ERROR.NETWORK, 'error');
+    }
     },
 
     /**
@@ -733,6 +745,22 @@ const App = {
     resetToInicio() {
         this.resetState();
         UIService.showSection('sectionTipoUsuario');
+    },
+
+
+    formatearDNI(dni) {
+        // Limpiar: quitar espacios, guiones, puntos
+        const dniLimpio = dni.replace(/[\s\-\.]/g, '');
+        // Validar que solo tenga números
+        if (!/^\d+$/.test(dniLimpio)) {
+            return null;
+        }
+        // Validar longitud (debe tener 13 dígitos)
+        if (dniLimpio.length !== 13) {
+            return null;
+        }
+        // Formatear: 0801-2001-21228
+        return `${dniLimpio.substring(0, 4)}-${dniLimpio.substring(4, 8)}-${dniLimpio.substring(8, 13)}`;
     }
 };
 
