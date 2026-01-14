@@ -9,9 +9,9 @@
 
 :root {
     /* Colores Principales */
-    --color-primary: #1e40af;
-    --color-primary-dark: #1e3a8a;
-    --color-primary-light: #3b82f6;
+    --color-primary: #40baeb;
+    --color-primary-dark: #21848b;
+    --color-primary-light: #3be0f6;
     
     --color-secondary: #10b981;
     --color-secondary-dark: #059669;
@@ -20,7 +20,7 @@
     --color-danger-dark: #dc2626;
     
     --color-warning: #f59e0b;
-    --color-info: #3b82f6;
+    --color-info: #779ddb;
     
     /* Colores de Fondo */
     --bg-primary: #ffffff;
@@ -318,11 +318,11 @@ html, body {
 }
 
 .card-icon.blue {
-    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    background: linear-gradient(135deg, #f68f3b 0%, #f13210 100%);
 }
 
 .card-icon.green {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, #b6bebc 0%, #141f1b 100%);
 }
 
 .card-icon.red {
