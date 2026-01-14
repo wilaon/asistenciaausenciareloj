@@ -113,30 +113,17 @@ const UIService = {
         toast.innerHTML = `
             <div class="toast-icon">${icons[type]}</div>
             <div class="toast-message">${message}</div>
-            <button class="toast-close">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
+            
         `;
 
         container.appendChild(toast);
 
         // Auto-remove after duration
-        const timeout = setTimeout(() => {
+        setTimeout(() => {
             this.removeToast(toast);
             this.unblockUI();
         }, CONFIG.UI.TOAST_DURATION);
 
-        // Close button handler
-        const closeBtn = toast.querySelector('.toast-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                clearTimeout(timeout);
-                this.removeToast(toast);
-                this.unblockUI();
-            });
-        }
     },
 
     /**

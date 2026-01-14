@@ -472,6 +472,7 @@ html, body {
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-primary);
+    align-items: center;
 }
 
 .badge {
@@ -1164,31 +1165,7 @@ html, body {
     line-height: 1.5;
 }
 
-.toast-close {
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: #f3f4f6;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s;
-    flex-shrink: 0;
-}
-
-.toast-close:hover {
-    background: #e5e7eb;
-}
-
-.toast-close svg {
-    width: 16px;
-    height: 16px;
-    color: #6b7280;
-}
-
-/* Screen Blocker */
+/* Screen Blocker - Bloquea clics */
 .screen-blocker {
     position: fixed;
     top: 0;
@@ -1199,6 +1176,7 @@ html, body {
     z-index: 9999;
     display: none;
     animation: fadeIn 0.2s ease;
+    cursor: not-allowed; /* Muestra que no se puede hacer clic */
 }
 
 @keyframes fadeIn {
@@ -1229,10 +1207,5 @@ html, body {
     
     .toast-message {
         font-size: 14px;
-    }
-    
-    .toast-close {
-        width: 28px;
-        height: 28px;
     }
 }
